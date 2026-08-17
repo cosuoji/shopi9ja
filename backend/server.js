@@ -14,6 +14,8 @@ import storeRoutes from './routes/store.js';
 import productRoutes from './routes/products.js';
 import orderRoutes from './routes/order.js';
 import uploadRoutes from './routes/upload.js';
+import analyticsRoutes from './routes/analytics.js';
+
 
 // Middleware
 import { apiLimiter } from './middleware/rateLimit.js';
@@ -55,6 +57,58 @@ app.use('/api/store', storeRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/analytics', analyticsRoutes);
+
+
+// 1. Matching your actual storefront route: /public/:slug
+app.get('/public/:slug', async (req, res, next) => {
+  // If the request isn't expecting HTML (e.g. an API fetch from your React app), let it pass to API controllers
+  if (req.headers.accept && req.headers.accept.includes('application/json')) {
+    return next();
+  }
+
+  try {
+    const store = await Store.findOne({ slug: req.params.slug });
+    if (!store) return next();
+
+    const title = `${store.name} | Atelier`;
+    const description = store.bio || `Explore the curated collection from ${store.name}.`;
+    const image = store.bannerImage || store.logo || 'https://yourdomain.com/og-default.jpg';
+    const url = `https://${req.get('host')}/public/${store.slug}`;
+
+    const customizedHtml = injectOgTags(indexHtml, { title, description, image, url });
+    return res.send(customizedHtml);
+  } catch (err) {
+    next();
+  }
+});
+
+// 2. Matching your actual product route: /slug/:productSlug
+app.get('/slug/:productSlug', async (req, res, next) => {
+  if (req.headers.accept && req.headers.accept.includes('application/json')) {
+    return next();
+  }
+
+  try {
+    const product = await Product.findOne({ slug: req.params.productSlug }).populate('storeId');
+    if (!product) return next();
+
+    const storeName = product.storeId?.name || 'Atelier';
+    const title = `${product.title} — ${storeName}`;
+    const formattedPrice = `${product.currency || 'NGN'} ${Number(product.price).toLocaleString()}`;
+    const description = product.description
+      ? `${formattedPrice} — ${product.description.slice(0, 150)}...`
+      : `Order ${product.title} directly via WhatsApp on Atelier for ${formattedPrice}.`;
+
+    const image = product.images?.[0] || 'https://yourdomain.com/og-default.jpg';
+    const url = `https://${req.get('host')}/slug/${product.slug}`;
+
+    const customizedHtml = injectOgTags(indexHtml, { title, description, image, url });
+    return res.send(customizedHtml);
+  } catch (err) {
+    next();
+  }
+});
 
 app.get("/health", (req, res) => {
   res.status(200).json({ status: "OK" });
