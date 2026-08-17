@@ -1,0 +1,26 @@
+@import "tailwindcss";
+
+@theme {
+  /* Color Palette: luxury.* */
+  --color-luxury-black: #0D0D0D;
+  --color-luxury-charcoal: #1A1A1A;
+  --color-luxury-cream: #FBF9F5;
+  --color-luxury-gold: #D4B886;
+  --color-luxury-gold-hover: #C5A880;
+  --color-luxury-gray: #2A2A2A;
+  --color-luxury-muted: #A3A3A3;
+  --color-luxury-border: #404040;
+
+  /* Typography */
+  --font-serif: "Playfair Display", Didot, Georgia, serif;
+  --font-sans: "Plus Jakarta Sans", Inter, sans-serif;
+
+  /* Letter Spacing */
+  --tracking-widest: 0.25em;
+  --tracking-editorial: 0.15em;
+}
+@layer base {
+  body {
+    @apply bg-luxury-black text-white font-sans antialiased selection:bg-luxury-gold selection:text-luxury-black;
+  }
+}
