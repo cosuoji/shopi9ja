@@ -28,9 +28,10 @@ export default function Storefront() {
     if (slug) fetchStoreData();
   }, [slug]);
 
+
   useSEO({
     title: store
-      ? `${capitalCase(store.name)}`
+      ? `${capitalCase(store?.name)}`
       : "Loading Storefront...",
     description:
       `Explore ${store?.name} products and services.`,

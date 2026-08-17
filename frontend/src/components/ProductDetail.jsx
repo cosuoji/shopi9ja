@@ -59,7 +59,7 @@ export default function ProductDetail() {
 
   useSEO({
     title: store
-      ? `${capitalCase(product?.title)} - ${capitalCase(store.name)}`
+      ? `${capitalCase(product?.title)} - ${capitalCase(store?.name)}`
       : "Loading Storefront...",
     description:
       `View ${capitalCase(product?.title)} by ${capitalCase(store?.name)}.`,
