@@ -30,11 +30,11 @@ export default function Storefront() {
 
 
   useSEO({
-    title: store ? capitalCase(store.name) : "Loading Store",
+    title: store ? capitalCase(store?.name) : "Loading Store",
     description:
       store?.bio || `Explore products from ${store?.name}.`,
     canonical: store
-      ? `https://independentmarkets.netlify.app/store/${store.slug}`
+      ? `https://independentmarkets.netlify.app/store/${store?.slug}`
       : undefined,
     ogImage: store?.bannerUrl || store?.logoUrl || "/default-preview.png",
     ogType: "website",

@@ -58,14 +58,14 @@ export default function ProductDetail() {
   };
 
   useSEO({
-    title: store
+    title: product
       ? `${capitalCase(product?.title)} - ${capitalCase(store?.name)}`
       : "Loading Product",
     description:
       product?.description ||
       `View ${capitalCase(product?.title)} by ${capitalCase(store?.name)}.`,
-    canonical: store
-      ? `https://independentmarkets.netlify.app/store/${store.slug}/product/${product.slug}`
+    canonical: product
+      ? `https://independentmarkets.netlify.app/store/${store?.slug}/product/${product?.slug}`
       : undefined,
     ogImage: product?.images?.[selectedImage] || "/default-preview.png",
     ogType: "product",
