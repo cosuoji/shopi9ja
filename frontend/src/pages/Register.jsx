@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import api from '../api/client';
+import useSEO from '../hooks/useSEO';
+
+
 
 export default function Register() {
   const [formData, setFormData] = useState({
@@ -28,6 +31,8 @@ export default function Register() {
       setStoreStatus({ checking: false, available: null, message: '', slug: '' });
       return;
     }
+
+
 
     const timer = setTimeout(async () => {
       setStoreStatus((prev) => ({ ...prev, checking: true }));
@@ -122,6 +127,13 @@ export default function Register() {
       setIsLoading(false);
     }
   };
+
+  useSEO({
+    title: "Register | Independent Markets",
+    description: "Create your Independent Markets store account.",
+    canonical: "https://independentmarkets.netlify.app/register",
+    ogType: "website",
+  });
 
   return (
     <div className="min-h-[80vh] flex items-center justify-center px-6 py-12">

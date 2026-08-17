@@ -2,9 +2,19 @@ import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useCartStore } from '../store/useCartStore';
 import api from '../api/client';
+import useSEO from '../hooks/useSEO';
+
 
 export default function Cart() {
   const { cart, updateQuantity, removeFromCart, clearCart } = useCartStore();
+
+  useSEO({
+    title: "Cart | Independent Markets",
+    description: "View and manage your shopping cart.",
+    canonical: "https://independentmarkets.netlify.app/cart",
+    ogType: "website",
+  });
+
 
   // Group items by storeId
   const storeGroups = useMemo(() => {
@@ -77,6 +87,8 @@ export default function Cart() {
       </div>
     );
   }
+
+
 
   return (
     <div className="min-h-screen bg-luxury-black text-white p-6 md:p-12">

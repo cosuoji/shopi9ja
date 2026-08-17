@@ -17,9 +17,9 @@ export default function ProductDetail() {
 
   // Toast Notification State
   const [showToast, setShowToast] = useState(false);
-
   const addToCart = useCartStore((state) => state.addToCart);
   const quantity = product?.stockQuantity;
+
 
   useEffect(() => {
     const fetchProductData = async () => {
@@ -57,19 +57,56 @@ export default function ProductDetail() {
     }, 4000);
   };
 
+  const productSchema =
+    product && store
+      ? {
+          "@context": "https://schema.org",
+          "@type": "Product",
+          name: product.title,
+          description:
+            product.description ||
+            `Shop ${product.title} from ${store.name}.`,
+          image: product.images || [],
+          category: product.category,
+          sku: product._id,
+          url: `https://independentmarkets.netlify.app/store/${store.slug}/product/${product.slug}`,
+          offers: {
+            "@type": "Offer",
+            url: `https://independentmarkets.netlify.app/store/${store.slug}/product/${product.slug}`,
+            priceCurrency: store.currency || "NGN",
+            price: Number(product.price),
+            availability:
+               Number(product.stockQuantity) > 0
+                ? "https://schema.org/InStock"
+                : "https://schema.org/OutOfStock",
+            seller: {
+              "@type": "OnlineStore",
+              name: store.name,
+              url: `https://independentmarkets.netlify.app/store/${store.slug}`,
+            },
+          },
+        }
+      : null;
+
   useSEO({
-    title: product
-      ? `${capitalCase(product?.title)} - ${capitalCase(store?.name)}`
-      : "Loading Product",
+    title:
+      `${product.title} — ${store.name} | Independent Markets`,
     description:
-      product?.description ||
-      `View ${capitalCase(product?.title)} by ${capitalCase(store?.name)}.`,
-    canonical: product
-      ? `https://independentmarkets.netlify.app/store/${store?.slug}/product/${product?.slug}`
+      product?.description
+        ? product.description.slice(0, 155)
+        : store && product
+          ? `Shop ${product.title} from ${store.name} on Independent Markets.`
+          : "View product details on Independent Markets.",
+    canonical: store && product
+      ? `https://independentmarkets.netlify.app/store/${store.slug}/product/${product.slug}`
       : undefined,
-    ogImage: product?.images?.[selectedImage] || "/default-preview.png",
+    ogImage:
+      product?.images?.[0] ||
+      "/default-preview.png",
     ogType: "product",
+    structuredData: productSchema,
   });
+
 
   if (loading || !product) {
     return (

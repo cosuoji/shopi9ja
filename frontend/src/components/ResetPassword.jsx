@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import useSEO from "../hooks/useSEO"
 
 export default function ResetPassword() {
   const [password, setPassword] = useState('');
@@ -35,6 +36,13 @@ export default function ResetPassword() {
       setStatus({ loading: false, success: '', error: err.message });
     }
   };
+
+  useSEO({
+    title: "Reset Password | Independent Markets",
+    description: "Reset your password using the password reset token.",
+    canonical: `https://independentmarkets.netlify.app/reset-password?token=${token}`,
+    ogType: "website",
+  });
 
   if (!token) {
     return (

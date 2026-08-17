@@ -191,6 +191,103 @@ Loading Atelier...
   }
 });
 
+app.get("/sitemap.xml", async (req, res) => {
+  try {
+    const frontendUrl =
+      process.env.FRONTEND_URL ||
+      "https://independentmarkets.netlify.app";
+
+    const [stores, products] = await Promise.all([
+      Store.find({})
+        .select("slug updatedAt")
+        .lean(),
+
+      Product.find({})
+        .populate("storeId", "slug")
+        .select("slug storeId updatedAt")
+        .lean(),
+    ]);
+
+    const urls = [];
+
+    // Homepage
+    urls.push(`
+      <url>
+        <loc>${frontendUrl}/</loc>
+        <changefreq>daily</changefreq>
+        <priority>1.0</priority>
+      </url>
+    `);
+
+    // Store pages
+    stores.forEach((store) => {
+      urls.push(`
+        <url>
+          <loc>${frontendUrl}/store/${encodeURIComponent(store.slug)}</loc>
+          <lastmod>${new Date(store.updatedAt).toISOString()}</lastmod>
+          <changefreq>weekly</changefreq>
+          <priority>0.8</priority>
+        </url>
+      `);
+    });
+
+    // Product pages
+    products.forEach((product) => {
+      if (!product.storeId?.slug) return;
+
+      urls.push(`
+        <url>
+          <loc>${frontendUrl}/store/${encodeURIComponent(
+            product.storeId.slug
+          )}/product/${encodeURIComponent(product.slug)}</loc>
+
+          <lastmod>${new Date(
+            product.updatedAt
+          ).toISOString()}</lastmod>
+
+          <changefreq>weekly</changefreq>
+          <priority>0.7</priority>
+        </url>
+      `);
+    });
+
+    const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  ${urls.join("\n")}
+</urlset>`;
+
+    res
+      .status(200)
+      .type("application/xml")
+      .send(sitemap);
+
+  } catch (error) {
+    console.error("Sitemap generation error:", error);
+
+    res
+      .status(500)
+      .type("text/plain")
+      .send("Unable to generate sitemap");
+  }
+});
+
+// Robots.txt
+app.get("/robots.txt", (req, res) => {
+  const frontendUrl =
+    process.env.FRONTEND_URL ||
+    "https://independentmarkets.netlify.app";
+
+  const robots = `User-agent: *
+Allow: /
+
+Sitemap: ${frontendUrl}/sitemap.xml
+`;
+
+  res
+    .status(200)
+    .type("text/plain")
+    .send(robots);
+});
 
 app.get("/health", (req, res) => {
   res.status(200).json({ status: "OK" });

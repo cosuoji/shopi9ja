@@ -1,6 +1,16 @@
 import { Link } from 'react-router-dom';
+import useSEO from '../hooks/useSEO';
 
 export default function Home() {
+  useSEO({
+     title: "Discover Independent Stores",
+     description:
+       "Discover products from independent stores and merchants on Independent Markets.",
+     canonical:
+       "https://independentmarkets.netlify.app/",
+     ogType: "website",
+   });
+
   const metrics = [
     { value: '3.2x', label: 'HIGHER CONVERSION THAN Standard SPAS' },
     { value: '< 1s', label: 'LIGHTNING FAST VITE PAGE LOADS' },

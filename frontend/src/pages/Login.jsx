@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
+import useSEO from '../hooks/useSEO';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -19,6 +20,13 @@ export default function Login() {
       setError(res.message);
     }
   };
+
+  useSEO({
+    title: "Login | Independent Markets",
+    description: "Log in to your Independent Markets account.",
+    canonical: "https://independentmarkets.netlify.app/login",
+    ogType: "website",
+  });
 
   return (
     <div className="min-h-[80vh] flex items-center justify-center px-6">

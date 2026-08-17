@@ -13,6 +13,31 @@ export default function Storefront() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
+
+  const storeSchema =
+    store
+      ? {
+          "@context": "https://schema.org",
+          "@type": "OnlineStore",
+
+          name: store.name,
+
+          description:
+            store.bio ||
+            `Shop products from ${store.name} on Independent Markets.`,
+
+          url: `https://independentmarkets.netlify.app/store/${store.slug}`,
+
+          ...(store.logoUrl && {
+            logo: store.logoUrl,
+          }),
+
+          ...(store.bannerUrl && {
+            image: store.bannerUrl,
+          }),
+        }
+      : null;
+
   useEffect(() => {
     const fetchStoreData = async () => {
       try {
@@ -30,16 +55,25 @@ export default function Storefront() {
 
 
   useSEO({
-    title: store ? capitalCase(store?.name) : "Loading Store",
+    title: store
+      ? `${store.name} — Shop Online | Independent Markets`
+      : "Loading Store | Independent Markets",
     description:
-      store?.bio || `Explore products from ${store?.name}.`,
+      store?.bio
+        ? store.bio.slice(0, 155)
+        : store
+          ? `Explore products from ${store.name} on Independent Markets.`
+          : "Explore independent stores on Independent Markets.",
     canonical: store
-      ? `https://independentmarkets.netlify.app/store/${store?.slug}`
+      ? `https://independentmarkets.netlify.app/store/${store.slug}`
       : undefined,
-    ogImage: store?.bannerUrl || store?.logoUrl || "/default-preview.png",
+    ogImage:
+      store?.bannerUrl ||
+      store?.logoUrl ||
+      "/default-preview.png",
     ogType: "website",
+    structuredData: storeSchema,
   });
-
   if (loading) {
     return (
       <div className="min-h-screen bg-luxury-black flex items-center justify-center text-luxury-gold text-xs uppercase tracking-editorial animate-pulse">

@@ -11,6 +11,18 @@
   force = true
 
 [[redirects]]
+  from = "/robots.txt"
+  to = "https://shopi9ja.onrender.com/robots.txt"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/sitemap.xml"
+  to = "https://shopi9ja.onrender.com/sitemap.xml"
+  status = 200
+  force = true
+
+[[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200

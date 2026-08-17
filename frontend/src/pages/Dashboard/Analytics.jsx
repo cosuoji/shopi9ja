@@ -40,9 +40,8 @@ export default function Analytics() {
   const { metrics, recentInquiries } = data || {};
 
   const stats = [
-    { label: 'GROSS REVENUE', value: `₦ ${(metrics?.grossRevenue || 0).toLocaleString()}` },
-    { label: 'WHATSAPP CONVERSIONS', value: `${metrics?.whatsappConversions || 0} Orders` },
-    { label: 'AVERAGE ORDER VALUE', value: `₦ ${Math.round(metrics?.averageOrderValue || 0).toLocaleString()}` },
+    { label: 'WHATSAPP CONVERSIONS', value: `${metrics?.whatsappConversions || 0} Cart Engagements` },
+    { label: 'ESTIMATED AVERAGE ORDER VALUE', value: `₦ ${Math.round(metrics?.averageOrderValue || 0).toLocaleString()}` },
     { label: 'CATALOG ENGAGEMENT', value: `${metrics?.catalogViews || 0} Views` },
   ];
 
