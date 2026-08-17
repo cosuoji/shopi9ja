@@ -1,4 +1,16 @@
 [[redirects]]
+  from = "/slug/*"
+  to = "https://shopi9ja.onrender.com/slug/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/public/*"
+  to = "https://shopi9ja.onrender.com/public/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
