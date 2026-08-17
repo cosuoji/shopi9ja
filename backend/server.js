@@ -61,54 +61,136 @@ app.use('/api/analytics', analyticsRoutes);
 
 
 // 1. Matching your actual storefront route: /public/:slug
-app.get('/public/:slug', async (req, res, next) => {
-  // If the request isn't expecting HTML (e.g. an API fetch from your React app), let it pass to API controllers
-  if (req.headers.accept && req.headers.accept.includes('application/json')) {
-    return next();
-  }
-
+app.get("/public/:slug", async (req, res) => {
   try {
-    const store = await Store.findOne({ slug: req.params.slug });
-    if (!store) return next();
+    const { slug } = req.params;
+
+    const store = await Store.findOne({ slug });
+
+    if (!store) {
+      return res.status(404).send("Store not found");
+    }
 
     const title = `${store.name} | Atelier`;
-    const description = store.bio || `Explore the curated collection from ${store.name}.`;
-    const image = store.bannerImage || store.logo || 'https://yourdomain.com/og-default.jpg';
-    const url = `https://${req.get('host')}/public/${store.slug}`;
 
-    const customizedHtml = injectOgTags(indexHtml, { title, description, image, url });
-    return res.send(customizedHtml);
+    const description =
+      store.bio ||
+      `Explore the collection from ${store.name} on Atelier.`;
+
+    const image =
+      store.bannerImage ||
+      store.logo ||
+      "https://yourdomain.com/og-default.jpg";
+
+    const url = `https://yourdomain.com/public/${slug}`;
+
+    const html = `
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>${title}</title>
+
+<meta name="description" content="${description}">
+
+<meta property="og:site_name" content="Atelier">
+<meta property="og:title" content="${title}">
+<meta property="og:description" content="${description}">
+<meta property="og:image" content="${image}">
+<meta property="og:type" content="website">
+<meta property="og:url" content="${url}">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="${title}">
+<meta name="twitter:description" content="${description}">
+<meta name="twitter:image" content="${image}">
+
+</head>
+
+<body>
+Loading Atelier...
+</body>
+
+</html>
+`;
+
+    res.send(html);
+
   } catch (err) {
-    next();
+    console.error(err);
+    res.status(500).send("Server Error");
   }
 });
-
 // 2. Matching your actual product route: /slug/:productSlug
-app.get('/slug/:productSlug', async (req, res, next) => {
-  if (req.headers.accept && req.headers.accept.includes('application/json')) {
-    return next();
-  }
-
+app.get("/slug/:productSlug", async (req, res) => {
   try {
-    const product = await Product.findOne({ slug: req.params.productSlug }).populate('storeId');
-    if (!product) return next();
+    const { productSlug } = req.params;
 
-    const storeName = product.storeId?.name || 'Atelier';
+    const product = await Product.findOne({
+      slug: productSlug,
+    }).populate("storeId");
+
+    if (!product) {
+      return res.status(404).send("Product not found");
+    }
+
+    const storeName = product.storeId?.name || "Atelier";
+
     const title = `${product.title} — ${storeName}`;
-    const formattedPrice = `${product.currency || 'NGN'} ${Number(product.price).toLocaleString()}`;
+
+    const formattedPrice =
+      `${product.currency || "NGN"} ` +
+      `${Number(product.price).toLocaleString()}`;
+
     const description = product.description
       ? `${formattedPrice} — ${product.description.slice(0, 150)}...`
       : `Order ${product.title} directly via WhatsApp on Atelier for ${formattedPrice}.`;
 
-    const image = product.images?.[0] || 'https://yourdomain.com/og-default.jpg';
-    const url = `https://${req.get('host')}/slug/${product.slug}`;
+    const image =
+      product.images?.[0] ||
+      "https://yourdomain.com/og-default.jpg";
 
-    const customizedHtml = injectOgTags(indexHtml, { title, description, image, url });
-    return res.send(customizedHtml);
+    const url =
+      `https://yourdomain.com/slug/${productSlug}`;
+
+    const html = `
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>${title}</title>
+
+<meta name="description" content="${description}">
+
+<meta property="og:site_name" content="Atelier">
+<meta property="og:title" content="${title}">
+<meta property="og:description" content="${description}">
+<meta property="og:image" content="${image}">
+<meta property="og:type" content="product">
+<meta property="og:url" content="${url}">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="${title}">
+<meta name="twitter:description" content="${description}">
+<meta name="twitter:image" content="${image}">
+
+</head>
+
+<body>
+Loading Atelier...
+</body>
+
+</html>
+`;
+
+    res.send(html);
+
   } catch (err) {
-    next();
+    console.error(err);
+    res.status(500).send("Server Error");
   }
 });
+
 
 app.get("/health", (req, res) => {
   res.status(200).json({ status: "OK" });
