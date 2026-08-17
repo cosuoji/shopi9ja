@@ -63,7 +63,7 @@ export default function ProductDetail() {
       : "Loading Storefront...",
     description:
       `View ${capitalCase(product?.title)} by ${capitalCase(store?.name)}.`,
-    ogImage: product.images?.[selectedImage] || "/default-preview.png",
+    ogImage: product?.images?.[selectedImage] || "/default-preview.png",
     ogType: "website",
   });
 
